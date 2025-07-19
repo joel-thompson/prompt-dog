@@ -1,6 +1,5 @@
 ---
-description: when adding new shadcn components
-globs: 
+description: use shadcn to create new components when possible
 alwaysApply: false
 ---
 SHADCN/UI COMPONENT INSTALLATION GUIDE

@@ -1,20 +1,22 @@
 ---
-description: 
-globs: 
 alwaysApply: true
 ---
-This project uses the following: 
-- next.js 15 with the app router
-- clerk for authentication
-- vitest for testing
-- tailwind 4 for css
-- shadcn for component library
-- TanStack Query (react-query)
 
-Always use pnpm as my package manager when adding/updating/removing packages
+# Project Description
 
-When adding new components, use shadcn when possible
+This project is a web application that allows users to test prompts for AI models.
 
-Pages that require authentication go under the (authenticated) route group
+# Tech Stack
 
-Publicly accessible pages go under the (unauthenticated) route
+- Next.js 15 app router + React 19
+- Tailwind CSS 4
+- TypeScript
+- Drizzle ORM
+- Neon Postgres
+- Clerk Auth
+- React Query
+- Shadcn UI
+
+# Rules
+
+Always use shadcn to create new components when possible
