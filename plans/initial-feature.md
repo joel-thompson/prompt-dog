@@ -19,3 +19,11 @@ Once the prompt is sent, the user should see the results of the prompt. This wil
 - Any logs associated with the prompt (api will return logs and the final response)
 
 If a user has chosen to run the prompt multiple times, the user should see the results of each run in tabs.
+
+Prompt templates will be hard coded for now.
+
+# Future Features
+
+These are out of scope for now, but keep in mind as they will need to be supported in the future.
+
+Prompt templates will be stored in the database.
