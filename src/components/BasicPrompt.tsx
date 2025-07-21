@@ -1,15 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { basicPromptJson } from "@/server/actions/basicPromptJson";
 import PromptInput from "./PromptInput";
 import PromptResponse from "./PromptResponse";
+import { basicPrompt } from "@/server/actions/basicPrompt";
 
 const BasicPrompt = () => {
-  const [response, setResponse] = useState<{
-    answer: string;
-    reasoning: string;
-  } | null>(null);
+  const [response, setResponse] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
@@ -19,7 +16,7 @@ const BasicPrompt = () => {
     setError("");
 
     try {
-      const result = await basicPromptJson(prompt);
+      const result = await basicPrompt(1, prompt);
       setResponse(result);
     } catch (err) {
       setError("Failed to get response from AI");
