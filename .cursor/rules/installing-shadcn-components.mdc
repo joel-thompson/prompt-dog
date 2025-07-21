@@ -1,5 +1,5 @@
 ---
-description: use shadcn to create new components when possible
+globs: *.tsx
 alwaysApply: false
 ---
 SHADCN/UI COMPONENT INSTALLATION GUIDE
