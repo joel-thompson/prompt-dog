@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -40,59 +40,29 @@ const getDataType = (
   return "text";
 };
 
-// Helper function to safely stringify complex objects
+// Helper function to safely stringify objects with circular reference protection
 const safeStringify = (data: object): string => {
   try {
-    // Handle special object types that need custom serialization
-    if (data instanceof Date) {
-      return JSON.stringify(data.toISOString(), null, 2);
-    }
-
-    if (data instanceof Map) {
-      return JSON.stringify(Object.fromEntries(data), null, 2);
-    }
-
-    if (data instanceof Set) {
-      return JSON.stringify(Array.from(data), null, 2);
-    }
-
-    if (data instanceof Error) {
-      return JSON.stringify(
-        {
-          name: data.name,
-          message: data.message,
-          stack: data.stack,
-        },
-        null,
-        2
-      );
-    }
-
-    // For regular objects, use standard stringify with circular reference handling
+    // Simple circular reference protection using a Set to track seen objects
+    const seen = new Set();
     return JSON.stringify(
       data,
       (key, value) => {
-        // Handle circular references
         if (typeof value === "object" && value !== null) {
-          if (value instanceof Date) return value.toISOString();
-          if (value instanceof Map) return Object.fromEntries(value);
-          if (value instanceof Set) return Array.from(value);
-          if (value instanceof Error)
-            return {
-              name: value.name,
-              message: value.message,
-              stack: value.stack,
-            };
+          if (seen.has(value)) {
+            return "[Circular Reference]";
+          }
+          seen.add(value);
         }
         return value;
       },
       2
     );
   } catch {
-    // Fallback for unstringifiable objects
+    // Fallback for truly unstringifiable objects
     return `[Object: ${
       data.constructor?.name || "Unknown"
-    }]\n\nNote: This object cannot be fully serialized to JSON.`;
+    }]\n\nNote: This object cannot be serialized to JSON.`;
   }
 };
 
@@ -102,51 +72,33 @@ export default function PromptResponse({
   error,
   title = "Response",
 }: PromptResponseProps) {
-  const dataType = getDataType(data);
-  const [copied, setCopied] = useState(false);
+  const [copiedJson, setCopiedJson] = useState(false);
+  const [copiedText, setCopiedText] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // Check if content is large (needs collapsing)
-  const isLargeContent = () => {
-    if (dataType === "text") {
-      return String(data).length > 2000;
-    }
-    if (dataType === "json") {
-      return safeStringify(data as object).length > 2000;
-    }
-    return false;
-  };
+  const dataType = getDataType(data);
 
-  const shouldShowCollapsible = isLargeContent();
-
-  const handleCopy = async () => {
+  const handleCopyJson = useCallback(async () => {
     try {
-      const textToCopy =
-        dataType === "json" ? safeStringify(data as object) : String(data);
+      const textToCopy = safeStringify(data as object);
       await navigator.clipboard.writeText(textToCopy);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+      setCopiedJson(true);
+      setTimeout(() => setCopiedJson(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy JSON: ", err);
+    }
+  }, [data]);
+
+  const handleCopyText = useCallback(async () => {
+    try {
+      const textToCopy = String(data);
+      await navigator.clipboard.writeText(textToCopy);
+      setCopiedText(true);
+      setTimeout(() => setCopiedText(false), 2000);
     } catch (err) {
       console.error("Failed to copy text: ", err);
     }
-  };
-
-  // Helper functions for metadata display
-  const getTypeLabel = () => {
-    if (dataType === "text") return "Text";
-    if (Array.isArray(data)) return "Array";
-    return "JSON Object";
-  };
-
-  const getSizeLabel = () => {
-    if (dataType === "text") {
-      return `${String(data).length} characters`;
-    }
-    if (Array.isArray(data)) {
-      return `${data.length} items`;
-    }
-    return `${Object.keys(data as object).length} properties`;
-  };
+  }, [data]);
 
   const renderContent = () => {
     if (loading) {
@@ -182,6 +134,10 @@ export default function PromptResponse({
       );
     }
 
+    const content =
+      dataType === "json" ? safeStringify(data as object) : String(data);
+    const isLargeContent = content.length > 2000;
+
     // Handle JSON data (objects and arrays)
     if (dataType === "json") {
       return (
@@ -193,7 +149,7 @@ export default function PromptResponse({
               </span>
             </div>
             <div className="flex gap-1">
-              {shouldShowCollapsible && (
+              {isLargeContent && (
                 <Button
                   size="sm"
                   variant="ghost"
@@ -206,25 +162,22 @@ export default function PromptResponse({
               <Button
                 size="sm"
                 variant="outline"
-                onClick={handleCopy}
+                onClick={handleCopyJson}
                 className="h-6 px-2 text-xs"
               >
-                {copied ? "Copied!" : "Copy"}
+                {copiedJson ? "Copied!" : "Copy"}
               </Button>
             </div>
           </div>
           <pre
             className={cn(
               "bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 overflow-x-auto text-sm font-mono border border-slate-200 dark:border-slate-700",
-              shouldShowCollapsible &&
-                isCollapsed &&
-                "max-h-40 overflow-y-auto",
-              shouldShowCollapsible &&
-                !isCollapsed &&
-                "max-h-96 overflow-y-auto"
+              isLargeContent && "transition-[max-height] duration-300",
+              isLargeContent && isCollapsed && "max-h-40 overflow-y-auto",
+              isLargeContent && !isCollapsed && "max-h-96 overflow-y-auto"
             )}
           >
-            <code>{safeStringify(data as object)}</code>
+            <code>{content}</code>
           </pre>
         </div>
       );
@@ -240,7 +193,7 @@ export default function PromptResponse({
             </span>
           </div>
           <div className="flex gap-1">
-            {shouldShowCollapsible && (
+            {isLargeContent && (
               <Button
                 size="sm"
                 variant="ghost"
@@ -253,22 +206,23 @@ export default function PromptResponse({
             <Button
               size="sm"
               variant="outline"
-              onClick={handleCopy}
+              onClick={handleCopyText}
               className="h-6 px-2 text-xs"
             >
-              {copied ? "Copied!" : "Copy"}
+              {copiedText ? "Copied!" : "Copy"}
             </Button>
           </div>
         </div>
         <div
           className={cn(
             "bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700",
-            shouldShowCollapsible && isCollapsed && "max-h-40 overflow-y-auto",
-            shouldShowCollapsible && !isCollapsed && "max-h-96 overflow-y-auto"
+            isLargeContent && "transition-[max-height] duration-300",
+            isLargeContent && isCollapsed && "max-h-40 overflow-y-auto",
+            isLargeContent && !isCollapsed && "max-h-96 overflow-y-auto"
           )}
         >
           <p className="whitespace-pre-wrap text-sm leading-relaxed">
-            {String(data)}
+            {content}
           </p>
         </div>
       </div>
@@ -276,11 +230,7 @@ export default function PromptResponse({
   };
 
   return (
-    <div
-      className={cn(
-        "bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-8"
-      )}
-    >
+    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-8">
       <div className="space-y-4">
         <Label className="text-base font-medium">{title}</Label>
         <div className="min-h-16">{renderContent()}</div>
@@ -289,8 +239,21 @@ export default function PromptResponse({
         {dataType !== "empty" && !loading && !error && (
           <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
             <div className="flex justify-between items-center text-xs text-muted-foreground">
-              <span>Type: {getTypeLabel()}</span>
-              <span>{getSizeLabel()}</span>
+              <span>
+                Type:{" "}
+                {dataType === "json"
+                  ? Array.isArray(data)
+                    ? "Array"
+                    : "JSON Object"
+                  : "Text"}
+              </span>
+              <span>
+                {dataType === "text"
+                  ? `${String(data).length} characters`
+                  : dataType === "json" && Array.isArray(data)
+                  ? `${data.length} items`
+                  : `${Object.keys(data as object).length} properties`}
+              </span>
             </div>
           </div>
         )}
