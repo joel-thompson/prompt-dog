@@ -22,8 +22,6 @@ If a user has chosen to run the prompt multiple times, the user should see the r
 
 Prompt templates will be hard coded for now.
 
-# Future Features
-
-These are out of scope for now, but keep in mind as they will need to be supported in the future.
+# Future Work (out of scope for now, but keep in mind)
 
 Prompt templates will be stored in the database.
