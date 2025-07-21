@@ -1,5 +1,5 @@
 import React from "react";
-import PromptInput from "@/components/PromptInput";
+import BasicPrompt from "@/components/BasicPrompt";
 
 export default function Home() {
   return (
@@ -18,8 +18,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Prompt Input Component */}
-          <PromptInput />
+          <BasicPrompt />
         </div>
       </div>
     </div>

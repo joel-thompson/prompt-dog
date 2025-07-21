@@ -17,6 +17,8 @@ This project is a web application that allows users to test prompts for AI model
 - React Query
 - Shadcn UI
 
-# Rules
+- Vercel AI SDK: https://ai-sdk.dev/docs/introduction
 
-Always use shadcn to create new components when possible
+# Decisions
+
+I will not be implementing streaming responses from the AI model.

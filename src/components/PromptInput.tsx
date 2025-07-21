@@ -36,10 +36,6 @@ export default function PromptInput({
     if (value.length <= maxLength) {
       setPrompt(value);
       onPromptChange?.(value);
-      // Log input changes when no external handler provided
-      if (!onPromptChange) {
-        console.log("Prompt input:", value);
-      }
     }
   };
 

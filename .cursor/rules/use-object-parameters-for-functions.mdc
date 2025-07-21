@@ -1,6 +1,5 @@
 ---
-description: when creating new functions
-globs: 
+globs: *.tsx,*.ts
 alwaysApply: false
 ---
 Functions should use object parameters instead of positional parameters for better maintainability and readability.

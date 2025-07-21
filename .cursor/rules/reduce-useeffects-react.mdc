@@ -1,6 +1,4 @@
 ---
-description: when adding a useEffect
-globs: 
 alwaysApply: false
 ---
 # useEffect Usage Rule
