@@ -78,4 +78,14 @@ const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
   );
 };
 
+export function BasicPromptLoading() {
+  return (
+    <div className="flex justify-center items-center py-12">
+      <span className="text-muted-foreground text-lg">
+        Loading prompt templates...
+      </span>
+    </div>
+  );
+}
+
 export default BasicPrompt;
