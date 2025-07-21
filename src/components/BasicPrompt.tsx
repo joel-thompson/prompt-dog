@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import PromptInput from "./PromptInput";
-import PromptResponse from "./PromptResponse";
-import { basicPrompt } from "@/server/actions/basicPrompt";
+import MultiplePromptResponse from "./MultiplePromptResponse";
+import { multipleBasicPrompts } from "@/server/actions/basicPrompt";
 import {
   Select,
   SelectContent,
@@ -20,15 +20,30 @@ interface PromptTemplate {
   text: string;
 }
 
+interface PromptResult {
+  response: string;
+  prompt: string;
+  duration: number;
+  timestamp: Date;
+}
+
+interface MultiplePromptResults {
+  results: PromptResult[];
+  totalDuration: number;
+  promptTemplate: string;
+  userInput: string;
+}
+
 interface BasicPromptProps {
   promptTemplates: PromptTemplate[];
 }
 
 const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
-  const [response, setResponse] = useState<string | null>(null);
+  const [response, setResponse] = useState<MultiplePromptResults | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [selectedPromptId, setSelectedPromptId] = useState<number>(1);
+  const [runCount, setRunCount] = useState<number>(1);
 
   const handleSubmit = async (prompt: string) => {
     setIsLoading(true);
@@ -36,7 +51,11 @@ const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
     setError("");
 
     try {
-      const result = await basicPrompt(selectedPromptId, prompt);
+      const result = await multipleBasicPrompts({
+        promptId: selectedPromptId,
+        input: prompt,
+        runCount: runCount,
+      });
       setResponse(result);
     } catch (err) {
       setError("Failed to get response from AI");
@@ -67,13 +86,32 @@ const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
         </Select>
       </div>
 
+      <div className="space-y-2">
+        <Label htmlFor="run-count-select">Number of Runs</Label>
+        <Select
+          value={runCount.toString()}
+          onValueChange={(value) => setRunCount(parseInt(value))}
+        >
+          <SelectTrigger id="run-count-select">
+            <SelectValue placeholder="Select number of runs" />
+          </SelectTrigger>
+          <SelectContent>
+            {[1, 2, 3, 4, 5].map((count) => (
+              <SelectItem key={count} value={count.toString()}>
+                {count === 1 ? "1 run" : `${count} runs`}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       <PromptInput onSubmit={handleSubmit} loading={isLoading} />
 
-      <PromptResponse
+      <MultiplePromptResponse
         data={response}
         loading={isLoading}
         error={error}
-        title="AI Response"
+        title={runCount === 1 ? "AI Response" : "AI Responses"}
       />
     </div>
   );
@@ -83,6 +121,12 @@ export function BasicPromptLoading() {
   return (
     <div className="space-y-6">
       {/* Prompt Template Section Skeleton */}
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-32" /> {/* Label skeleton */}
+        <Skeleton className="h-10 w-full" /> {/* Select skeleton */}
+      </div>
+
+      {/* Run Count Section Skeleton */}
       <div className="space-y-2">
         <Skeleton className="h-4 w-32" /> {/* Label skeleton */}
         <Skeleton className="h-10 w-full" /> {/* Select skeleton */}
