@@ -18,7 +18,7 @@ interface PromptInputProps {
 export default function PromptInput({
   onPromptChange,
   onSubmit = (prompt) => console.log("Submitted prompt:", prompt),
-  placeholder = "Write your AI prompt here... For example: 'Generate a creative story about a space explorer discovering a new planet.'",
+  placeholder = "Write your input here... For example: 'Generate a creative story about a space explorer discovering a new planet.'",
   maxLength = 2000,
   disabled = false,
   loading = false,
@@ -43,7 +43,7 @@ export default function PromptInput({
     e.preventDefault();
 
     if (!prompt.trim()) {
-      setError("Please enter a prompt");
+      setError("Please enter an input");
       return;
     }
 
@@ -60,7 +60,7 @@ export default function PromptInput({
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <Label htmlFor="prompt" className="mb-3">
-            Enter your prompt
+            Enter your input
           </Label>
           <div className="relative">
             <Textarea

@@ -1,6 +1,8 @@
-// mock data for now
+// mock data for now, simulate a delay for db call
 
-const getPromptTemplates = () => {
+const getPromptTemplates = async () => {
+  // simulate a delay
+  await new Promise((resolve) => setTimeout(resolve, 500));
   return [
     {
       id: 1,
@@ -18,6 +20,11 @@ const getPromptTemplates = () => {
       text: "You are a creative brainstorming assistant. Generate three unique ideas or solutions based on the user's request:\n\n{{INPUT}}",
     },
   ];
+};
+
+export const getPromptTemplate = async (id: number) => {
+  const templates = await getPromptTemplates();
+  return templates.find((p) => p.id === id);
 };
 
 export default getPromptTemplates;

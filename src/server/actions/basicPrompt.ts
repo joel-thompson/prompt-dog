@@ -2,11 +2,11 @@
 
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
-import getPromptTemplates from "../db/promptTemplates";
+import { getPromptTemplate } from "../db/promptTemplates";
 import insertInputIntoPrompt from "../insertInputIntoPrompt";
 
 export async function basicPrompt(promptId: number, input: string) {
-  const template = getPromptTemplates().find((p) => p.id === promptId)?.text;
+  const template = (await getPromptTemplate(promptId))?.text;
   if (!template) {
     return "Prompt not found";
   }
