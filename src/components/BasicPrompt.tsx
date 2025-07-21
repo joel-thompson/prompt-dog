@@ -1,22 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { basicPrompt } from "@/server/actions/basicPrompt";
+import { basicPromptJson } from "@/server/actions/basicPromptJson";
 import PromptInput from "./PromptInput";
 import PromptResponse from "./PromptResponse";
 
 const BasicPrompt = () => {
-  const [response, setResponse] = useState<string>("");
+  const [response, setResponse] = useState<{
+    answer: string;
+    reasoning: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
   const handleSubmit = async (prompt: string) => {
     setIsLoading(true);
-    setResponse("");
+    setResponse(null);
     setError("");
 
     try {
-      const result = await basicPrompt(prompt);
+      const result = await basicPromptJson(prompt);
       setResponse(result);
     } catch (err) {
       setError("Failed to get response from AI");

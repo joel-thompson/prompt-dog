@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface PromptResponseProps {
-  data: string | object;
+  data: string | object | null;
   loading: boolean;
   error?: string;
   title?: string;
@@ -14,7 +14,7 @@ interface PromptResponseProps {
 
 // Helper function for proper type discrimination
 const getDataType = (
-  data: string | object | null | undefined
+  data: string | object | null
 ): "text" | "json" | "empty" => {
   // Handle null/undefined
   if (data === null || data === undefined) {
@@ -238,15 +238,7 @@ export default function PromptResponse({
         {/* Response metadata */}
         {dataType !== "empty" && !loading && !error && (
           <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-            <div className="flex justify-between items-center text-xs text-muted-foreground">
-              <span>
-                Type:{" "}
-                {dataType === "json"
-                  ? Array.isArray(data)
-                    ? "Array"
-                    : "JSON Object"
-                  : "Text"}
-              </span>
+            <div className="flex justify-end items-center text-xs text-muted-foreground">
               <span>
                 {dataType === "text"
                   ? `${String(data).length} characters`
