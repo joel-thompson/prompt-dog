@@ -6,14 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
-interface PromptResult {
+export interface PromptResult {
   response: string | object;
   prompt: string;
   duration: number;
   timestamp: Date;
 }
 
-interface MultiplePromptResults {
+export interface MultiplePromptResults {
   results: PromptResult[];
   totalDuration: number;
   promptTemplate: string;

@@ -1,5 +1,11 @@
 // mock data for now, simulate a delay for db call
 
+export interface PromptTemplate {
+  id: number;
+  name: string;
+  text: string;
+}
+
 const getPromptTemplates = async () => {
   // simulate a delay
   await new Promise((resolve) => setTimeout(resolve, 500));

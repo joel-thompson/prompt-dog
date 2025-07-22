@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import PromptInput from "./PromptInput";
-import MultiplePromptResponse from "./MultiplePromptResponse";
+import MultiplePromptResponse, {
+  MultiplePromptResults,
+} from "./MultiplePromptResponse";
 import { multipleBasicPrompts } from "@/server/actions/basicPrompt";
 import {
   Select,
@@ -13,26 +15,13 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PromptTemplate } from "@/server/db/promptTemplates";
 
-interface PromptTemplate {
-  id: number;
-  name: string;
-  text: string;
-}
-
-interface PromptResult {
-  response: string;
-  prompt: string;
-  duration: number;
-  timestamp: Date;
-}
-
-interface MultiplePromptResults {
-  results: PromptResult[];
-  totalDuration: number;
-  promptTemplate: string;
-  userInput: string;
-}
+// TODO: instead of taking in the prompt templates for the db, it should take in an array of prompt template functions, which take in the user input.
+// those function should have the same return type as the multipleBasicPrompts function.
+// this gives more flexibility. i can have basic prompt tempaltes which are just strings, eventually stored in the db.
+// i can also have more complex prompts which are chains of prompts of any kind, which is a function that gets called with the user input.
+// this translation / grouping to an array of functions should be done in BasicPromptWrapper
 
 interface BasicPromptProps {
   promptTemplates: PromptTemplate[];
@@ -105,7 +94,7 @@ const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
         </Select>
       </div>
 
-      <PromptInput onSubmit={handleSubmit} loading={isLoading} />
+      <PromptInput onSubmit={handleSubmit} disabled={isLoading} />
 
       <MultiplePromptResponse
         data={response}
