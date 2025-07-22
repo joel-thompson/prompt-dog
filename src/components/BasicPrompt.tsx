@@ -109,50 +109,9 @@ const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
 export function BasicPromptLoading() {
   return (
     <div className="space-y-6">
-      {/* Prompt Template Section Skeleton */}
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-32" /> {/* Label skeleton */}
-        <Skeleton className="h-10 w-full" /> {/* Select skeleton */}
-      </div>
-
-      {/* Run Count Section Skeleton */}
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-32" /> {/* Label skeleton */}
-        <Skeleton className="h-10 w-full" /> {/* Select skeleton */}
-      </div>
-
-      {/* Prompt Input Section Skeleton - matching PromptInput card styling */}
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-8">
-        <div className="space-y-6">
-          <div>
-            <Skeleton className="h-4 w-32 mb-3" />{" "}
-            {/* "Enter your input" label */}
-            <Skeleton className="h-32 w-full rounded-lg" />{" "}
-            {/* Textarea skeleton */}
-            {/* Character count skeleton */}
-            <div className="flex justify-between items-center mt-2">
-              <div /> {/* Empty space for error messages */}
-              <Skeleton className="h-4 w-40" /> {/* Character count */}
-            </div>
-          </div>
-
-          {/* Submit button skeleton - centered */}
-          <div className="flex justify-center">
-            <Skeleton className="h-11 w-32 rounded-md" /> {/* Submit button */}
-          </div>
-        </div>
-      </div>
-
-      {/* Response Section Skeleton - matching PromptResponse card styling */}
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-8">
-        <div className="space-y-4">
-          <Skeleton className="h-4 w-24" /> {/* "AI Response" title */}
-          <div className="min-h-16 flex items-center justify-center py-8">
-            <Skeleton className="h-4 w-32" />{" "}
-            {/* "No response yet" placeholder */}
-          </div>
-        </div>
-      </div>
+      <Skeleton className="h-20 w-full bg-slate-200 dark:bg-slate-700" />
+      <Skeleton className="h-40 w-full bg-slate-200 dark:bg-slate-700" />
+      <Skeleton className="h-60 w-full bg-slate-200 dark:bg-slate-700" />
     </div>
   );
 }
