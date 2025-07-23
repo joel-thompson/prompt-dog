@@ -13,9 +13,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PromptTemplate, MultiplePromptResults } from "@/types/promptHandler";
-import { createDbPromptHandler } from "@/utils/createDbPromptHandler";
-import { createAdvancedHandler } from "@/utils/createAdvancedHandler";
-import { basicPromptJson } from "@/server/actions/basicPromptJson";
+import { createPromptHandlers } from "@/utils/createPromptHandlers";
 
 interface BasicPromptProps {
   promptTemplates: PromptTemplate[];
@@ -24,16 +22,7 @@ interface BasicPromptProps {
 const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
   // Create handlers on the client side to avoid serialization issues
   const promptHandlers = useMemo(
-    () => [
-      ...promptTemplates.map(createDbPromptHandler),
-      createAdvancedHandler({
-        id: "json-response",
-        name: "Structured JSON Response",
-        description:
-          "Returns structured answer with reasoning using JSON schema",
-        asyncFunction: basicPromptJson,
-      }),
-    ],
+    () => createPromptHandlers(promptTemplates),
     [promptTemplates]
   );
 

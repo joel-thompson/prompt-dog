@@ -12,6 +12,7 @@ export async function basicPromptJson(userInput: string) {
   const response = await generateObject({
     model: openai("gpt-4o-mini"),
     prompt: fullPrompt,
+    temperature: 1,
     schema: z.object({
       answer: z.string().describe("The answer to the user's question"),
       reasoning: z.string().describe("The reasoning behind the answer"),
