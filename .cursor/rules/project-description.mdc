@@ -21,8 +21,12 @@ This project is a web application that allows users to test prompts for AI model
 
 # Decisions
 
-I will not be implementing streaming responses from the AI model.
+- I will not be implementing streaming responses from the AI model.
 
 # Important scripts
 
 - pnpm lint - runs linting
+
+# Server Actions
+
+- server actions are in the `src/server/actions` directory. one file per action.
