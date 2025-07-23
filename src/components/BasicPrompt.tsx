@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PromptTemplate, MultiplePromptResults } from "@/types/promptHandler";
 import { createDbPromptHandler } from "@/utils/createDbPromptHandler";
+import { createAdvancedHandler } from "@/utils/createAdvancedHandler";
+import { basicPromptJson } from "@/server/actions/basicPromptJson";
 
 interface BasicPromptProps {
   promptTemplates: PromptTemplate[];
@@ -22,7 +24,17 @@ interface BasicPromptProps {
 const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
   // Create handlers on the client side to avoid serialization issues
   const promptHandlers = useMemo(
-    () => promptTemplates.map(createDbPromptHandler),
+    () => [
+      ...promptTemplates.map(createDbPromptHandler),
+      createAdvancedHandler({
+        id: "json-response",
+        name: "Structured JSON Response",
+        description:
+          "Returns structured answer with reasoning using JSON schema",
+        asyncFunction: basicPromptJson,
+        promptLabel: "JSON Schema Prompt",
+      }),
+    ],
     [promptTemplates]
   );
 
@@ -72,7 +84,27 @@ const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
           <SelectContent>
             {promptHandlers.map((handler) => (
               <SelectItem key={handler.id} value={handler.id}>
-                {handler.name}
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex flex-col items-start">
+                    <div className="flex items-center gap-2">
+                      <span>{handler.name}</span>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded ${
+                          handler.category === "advanced"
+                            ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                            : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                        }`}
+                      >
+                        {handler.category.toUpperCase()}
+                      </span>
+                    </div>
+                    {handler.description && (
+                      <span className="text-xs text-muted-foreground mt-1">
+                        {handler.description}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </SelectItem>
             ))}
           </SelectContent>

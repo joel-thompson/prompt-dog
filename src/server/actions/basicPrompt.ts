@@ -3,7 +3,7 @@
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getPromptTemplate } from "../db/promptTemplates";
-import insertInputIntoPrompt from "../insertInputIntoPrompt";
+import insertInputIntoPrompt from "../../utils/insertInputIntoPrompt";
 import { PromptResult, MultiplePromptResults } from "@/types/promptHandler";
 
 export async function basicPrompt(
