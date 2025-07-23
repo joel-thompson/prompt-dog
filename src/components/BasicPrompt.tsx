@@ -46,6 +46,11 @@ const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
   // Use the first handler ID if none is selected
   const currentHandlerId = selectedHandlerId || promptHandlers[0]?.id || "";
 
+  // Get the currently selected handler
+  const selectedHandler = promptHandlers.find(
+    (handler) => handler.id === currentHandlerId
+  );
+
   const handleSubmit = async (input: string) => {
     setIsLoading(true);
     setResponse(null);
@@ -83,31 +88,27 @@ const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
           <SelectContent>
             {promptHandlers.map((handler) => (
               <SelectItem key={handler.id} value={handler.id}>
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex flex-col items-start">
-                    <div className="flex items-center gap-2">
-                      <span>{handler.name}</span>
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded ${
-                          handler.category === "advanced"
-                            ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
-                            : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                        }`}
-                      >
-                        {handler.category.toUpperCase()}
-                      </span>
-                    </div>
-                    {handler.description && (
-                      <span className="text-xs text-muted-foreground mt-1">
-                        {handler.description}
-                      </span>
-                    )}
-                  </div>
+                <div className="flex items-center gap-2">
+                  <span>{handler.name}</span>
+                  <span
+                    className={`text-xs px-2 py-0.5 rounded ${
+                      handler.category === "advanced"
+                        ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                        : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                    }`}
+                  >
+                    {handler.category.toUpperCase()}
+                  </span>
                 </div>
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+        {selectedHandler?.description && (
+          <p className="text-sm text-muted-foreground mt-2">
+            {selectedHandler.description}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">

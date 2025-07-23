@@ -10,6 +10,7 @@ export const createDbPromptHandler = (
 ): PromptHandler => ({
   id: `db-${template.id}`,
   name: template.name,
+  description: template.description,
   category: "basic",
   execute: ({ input, runCount }) =>
     multipleBasicPrompts({

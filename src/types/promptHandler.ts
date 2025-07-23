@@ -5,6 +5,7 @@ export interface PromptTemplate {
   id: number;
   name: string;
   text: string;
+  description?: string;
 }
 
 // Result from a single prompt execution (consolidated from basicPrompt.ts and MultiplePromptResponse.tsx)
