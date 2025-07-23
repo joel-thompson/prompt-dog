@@ -119,12 +119,18 @@ interface BasicPromptProps {
 
 #### Core Types and Utilities
 - [ ] **Create `src/types/promptHandler.ts`**
-  - [ ] Define `MultiplePromptResults` type (if not already exported)
-  - [ ] Define `PromptHandler` type with execute function signature
-  - [ ] Export types for use across components
+  - [ ] Consolidate existing duplicate types:
+    - `PromptResult` (currently in both `basicPrompt.ts` and `MultiplePromptResponse.tsx`)
+      - Note: `basicPrompt.ts` uses `response: string`, `MultiplePromptResponse.tsx` uses `response: string | object`
+      - Use the more flexible `string | object` version to support future JSON responses
+    - `MultiplePromptResults` (currently in both `basicPrompt.ts` and `MultiplePromptResponse.tsx`)
+    - `PromptTemplate` (currently in `promptTemplates.ts`)
+  - [ ] Define new `PromptHandler` type with execute function signature
+  - [ ] Export all types for use across components
+  - [ ] Update imports in existing files to use consolidated types
 
 - [ ] **Create `src/utils/createDbPromptHandler.ts`**
-  - [ ] Import `PromptTemplate` type from existing schema
+  - [ ] Import `PromptTemplate` type from consolidated types file
   - [ ] Import `multipleBasicPrompts` server action
   - [ ] Create utility function that converts PromptTemplate to PromptHandler
   - [ ] Follow handler ID convention: `db-${template.id}`
@@ -149,6 +155,7 @@ interface BasicPromptProps {
   - [ ] Test prompt selection and execution
   - [ ] Verify multiple runs still work correctly
   - [ ] Check error states display properly
+  - [ ] Verify type consolidation doesn't break existing functionality
 
 ### Phase 2: Advanced Handler Examples
 
@@ -203,13 +210,16 @@ interface BasicPromptProps {
   - All existing functionality should work the same from user perspective
 
 ### Files to Create
-- `src/types/promptHandler.ts`
+- `src/types/promptHandler.ts` (consolidate existing duplicate types + new PromptHandler type)
 - `src/utils/createDbPromptHandler.ts` 
 - `src/server/handlers/jsonResponseHandler.ts`
 
 ### Files to Modify
 - `src/components/BasicPromptWrapper.tsx`
 - `src/components/BasicPrompt.tsx`
+- `src/server/actions/basicPrompt.ts` (remove duplicate types, import from central types file)
+- `src/components/MultiplePromptResponse.tsx` (remove duplicate types, import from central types file)
+- `src/server/db/promptTemplates.ts` (remove PromptTemplate interface, import from central types file)
 
 ### Testing Strategy
 After each phase, test that:

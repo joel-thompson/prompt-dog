@@ -1,10 +1,9 @@
 // mock data for now, simulate a delay for db call
 
-export interface PromptTemplate {
-  id: number;
-  name: string;
-  text: string;
-}
+import { PromptTemplate } from "@/types/promptHandler";
+
+// Re-export for compatibility with existing imports
+export type { PromptTemplate };
 
 const getPromptTemplates = async () => {
   // simulate a delay

@@ -4,20 +4,7 @@ import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getPromptTemplate } from "../db/promptTemplates";
 import insertInputIntoPrompt from "../insertInputIntoPrompt";
-
-interface PromptResult {
-  response: string;
-  prompt: string;
-  duration: number;
-  timestamp: Date;
-}
-
-interface MultiplePromptResults {
-  results: PromptResult[];
-  totalDuration: number;
-  promptTemplate: string;
-  userInput: string;
-}
+import { PromptResult, MultiplePromptResults } from "@/types/promptHandler";
 
 export async function basicPrompt(
   promptId: number,

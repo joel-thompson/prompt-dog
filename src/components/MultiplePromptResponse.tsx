@@ -5,20 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-
-export interface PromptResult {
-  response: string | object;
-  prompt: string;
-  duration: number;
-  timestamp: Date;
-}
-
-export interface MultiplePromptResults {
-  results: PromptResult[];
-  totalDuration: number;
-  promptTemplate: string;
-  userInput: string;
-}
+import { MultiplePromptResults } from "@/types/promptHandler";
 
 interface MultiplePromptResponseProps {
   data: MultiplePromptResults | null;

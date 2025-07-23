@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import PromptInput from "./PromptInput";
-import MultiplePromptResponse, {
-  MultiplePromptResults,
-} from "./MultiplePromptResponse";
-import { multipleBasicPrompts } from "@/server/actions/basicPrompt";
+import MultiplePromptResponse from "./MultiplePromptResponse";
 import {
   Select,
   SelectContent,
@@ -15,36 +12,43 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PromptTemplate } from "@/server/db/promptTemplates";
-
-// TODO: instead of taking in the prompt templates for the db, it should take in an array of prompt template functions, which take in the user input.
-// those function should have the same return type as the multipleBasicPrompts function.
-// this gives more flexibility. i can have basic prompt tempaltes which are just strings, eventually stored in the db.
-// i can also have more complex prompts which are chains of prompts of any kind, which is a function that gets called with the user input.
-// this translation / grouping to an array of functions should be done in BasicPromptWrapper
+import { PromptTemplate, MultiplePromptResults } from "@/types/promptHandler";
+import { createDbPromptHandler } from "@/utils/createDbPromptHandler";
 
 interface BasicPromptProps {
   promptTemplates: PromptTemplate[];
 }
 
 const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
+  // Create handlers on the client side to avoid serialization issues
+  const promptHandlers = useMemo(
+    () => promptTemplates.map(createDbPromptHandler),
+    [promptTemplates]
+  );
+
   const [response, setResponse] = useState<MultiplePromptResults | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
-  const [selectedPromptId, setSelectedPromptId] = useState<number>(1);
+  const [selectedHandlerId, setSelectedHandlerId] = useState<string>("");
   const [runCount, setRunCount] = useState<number>(1);
 
-  const handleSubmit = async (prompt: string) => {
+  // Use the first handler ID if none is selected
+  const currentHandlerId = selectedHandlerId || promptHandlers[0]?.id || "";
+
+  const handleSubmit = async (input: string) => {
     setIsLoading(true);
     setResponse(null);
     setError("");
 
     try {
-      const result = await multipleBasicPrompts({
-        promptId: selectedPromptId,
-        input: prompt,
-        runCount: runCount,
-      });
+      const selectedHandler = promptHandlers.find(
+        (handler) => handler.id === currentHandlerId
+      );
+      if (!selectedHandler) {
+        throw new Error("Selected handler not found");
+      }
+
+      const result = await selectedHandler.execute({ input, runCount });
       setResponse(result);
     } catch (err) {
       setError("Failed to get response from AI");
@@ -59,16 +63,16 @@ const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
       <div className="space-y-2">
         <Label htmlFor="prompt-template-select">Prompt Template</Label>
         <Select
-          value={selectedPromptId.toString()}
-          onValueChange={(value) => setSelectedPromptId(parseInt(value))}
+          value={currentHandlerId}
+          onValueChange={(value) => setSelectedHandlerId(value)}
         >
           <SelectTrigger id="prompt-template-select">
             <SelectValue placeholder="Select a prompt template" />
           </SelectTrigger>
           <SelectContent>
-            {promptTemplates.map((template) => (
-              <SelectItem key={template.id} value={template.id.toString()}>
-                {template.name}
+            {promptHandlers.map((handler) => (
+              <SelectItem key={handler.id} value={handler.id}>
+                {handler.name}
               </SelectItem>
             ))}
           </SelectContent>
