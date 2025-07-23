@@ -325,30 +325,29 @@ export default function MultiplePromptResponse({
           {/* Response */}
           {renderResponseContent(result.response, responseKey)}
 
-          {/* Prompt */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Label className="text-sm font-medium">Prompt Sent</Label>
-                <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
-                  PROMPT
-                </span>
+          {/* Prompt - only show if result has a prompt */}
+          {result.prompt && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm font-medium">Prompt Sent</Label>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={createHandleCopyText(result.prompt!, promptKey)}
+                  className="h-6 px-2 text-xs"
+                >
+                  {copiedTextStates[promptKey] ? "Copied!" : "Copy"}
+                </Button>
               </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={createHandleCopyText(result.prompt, promptKey)}
-                className="h-6 px-2 text-xs"
-              >
-                {copiedTextStates[promptKey] ? "Copied!" : "Copy"}
-              </Button>
+              <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700 max-h-40 overflow-y-auto">
+                <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                  {result.prompt}
+                </p>
+              </div>
             </div>
-            <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700 max-h-40 overflow-y-auto">
-              <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                {result.prompt}
-              </p>
-            </div>
-          </div>
+          )}
         </div>
       );
     }
@@ -427,30 +426,34 @@ export default function MultiplePromptResponse({
                 {/* Response */}
                 {renderResponseContent(result.response, responseKey)}
 
-                {/* Prompt */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Label className="text-sm font-medium">Prompt Sent</Label>
-                      <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
-                        PROMPT
-                      </span>
+                {/* Prompt - only show if result has a prompt */}
+                {result.prompt && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm font-medium">
+                          Prompt Sent
+                        </Label>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={createHandleCopyText(
+                          result.prompt!,
+                          promptKey
+                        )}
+                        className="h-6 px-2 text-xs"
+                      >
+                        {copiedTextStates[promptKey] ? "Copied!" : "Copy"}
+                      </Button>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={createHandleCopyText(result.prompt, promptKey)}
-                      className="h-6 px-2 text-xs"
-                    >
-                      {copiedTextStates[promptKey] ? "Copied!" : "Copy"}
-                    </Button>
+                    <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700 max-h-40 overflow-y-auto">
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                        {result.prompt}
+                      </p>
+                    </div>
                   </div>
-                  <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700 max-h-40 overflow-y-auto">
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                      {result.prompt}
-                    </p>
-                  </div>
-                </div>
+                )}
               </TabsContent>
             );
           })}

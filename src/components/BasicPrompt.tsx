@@ -32,7 +32,6 @@ const BasicPrompt = ({ promptTemplates }: BasicPromptProps) => {
         description:
           "Returns structured answer with reasoning using JSON schema",
         asyncFunction: basicPromptJson,
-        promptLabel: "JSON Schema Prompt",
       }),
     ],
     [promptTemplates]

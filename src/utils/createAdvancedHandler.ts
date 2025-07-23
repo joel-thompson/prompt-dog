@@ -1,26 +1,20 @@
-import { PromptHandler } from "@/types/promptHandler";
+import { PromptHandler, AdvancedResponse } from "@/types/promptHandler";
 
 /**
  * Creates an advanced handler from any async function
  * This allows any function to be wrapped and used with the prompt system
  */
-type AdvancedResponse = {
-  response: string | object;
-  prompt?: string;
-};
 
 export const createAdvancedHandler = ({
   id,
   name,
   description,
   asyncFunction,
-  promptLabel = "Advanced Prompt",
 }: {
   id: string;
   name: string;
   description?: string;
   asyncFunction: (input: string) => Promise<AdvancedResponse>;
-  promptLabel?: string;
 }): PromptHandler => ({
   id,
   name,
@@ -39,7 +33,7 @@ export const createAdvancedHandler = ({
 
         // Advanced functions always return { response, prompt? }
         const response = result.response;
-        const usedPrompt = result.prompt || `${promptLabel}: ${input}`;
+        const usedPrompt = result.prompt;
 
         results.push({
           response, // Return raw response - let MultiplePromptResponse handle JSON vs text
@@ -55,7 +49,7 @@ export const createAdvancedHandler = ({
           response: `Error: ${
             error instanceof Error ? error.message : "Unknown error occurred"
           }`,
-          prompt: `${promptLabel}: ${input}`,
+          prompt: `Error processing: ${input}`,
           duration: duration,
           timestamp: new Date(runStartTime),
         });

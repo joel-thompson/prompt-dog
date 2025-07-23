@@ -11,7 +11,7 @@ export interface PromptTemplate {
 // Using the more flexible version with string | object response to support future JSON responses
 export interface PromptResult {
   response: string | object;
-  prompt: string;
+  prompt?: string; // Optional for advanced handlers that might not have a meaningful prompt
   duration: number;
   timestamp: Date;
 }
@@ -34,4 +34,9 @@ export interface PromptHandler {
     input: string;
     runCount: number;
   }) => Promise<MultiplePromptResults>;
+}
+
+export interface AdvancedResponse {
+  response: string | object;
+  prompt?: string;
 }
