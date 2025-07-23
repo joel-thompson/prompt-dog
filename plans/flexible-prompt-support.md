@@ -113,32 +113,111 @@ interface BasicPromptProps {
 }
 ```
 
-## Implementation Plan
+## Implementation Checklist
 
 ### Phase 1: Handler Pattern Foundation
-1. Create `src/types/promptHandler.ts` with PromptHandler type
-2. Create `src/utils/createDbPromptHandler.ts` utility function
-3. Update BasicPromptWrapper:
-   - Fetch mock data as before
-   - Convert to handlers using utility
-   - Pass handlers to BasicPrompt
-4. Update BasicPrompt:
-   - Change props interface to accept handlers
-   - Update state from `selectedPromptId` to `selectedHandlerId`
-   - Update Select component to use handler.id and handler.name
-   - Update submit to call `selectedHandler.execute()`
-5. Test with existing mock data
 
-### Phase 2: Complex Handler Examples
-1. Create sample complex prompt handlers (chains, API calls, etc.)
-2. Add handler descriptions/tooltips
-3. Test error handling (all handlers return basic error messages)
+#### Core Types and Utilities
+- [ ] **Create `src/types/promptHandler.ts`**
+  - [ ] Define `MultiplePromptResults` type (if not already exported)
+  - [ ] Define `PromptHandler` type with execute function signature
+  - [ ] Export types for use across components
 
-### Phase 3: Database Migration (When Ready)
-1. Create database migration for prompt_templates table
-2. Update mock data service to use real database
-3. Add CRUD operations for prompt templates
-4. User authentication integration for user-specific prompts
+- [ ] **Create `src/utils/createDbPromptHandler.ts`**
+  - [ ] Import `PromptTemplate` type from existing schema
+  - [ ] Import `multipleBasicPrompts` server action
+  - [ ] Create utility function that converts PromptTemplate to PromptHandler
+  - [ ] Follow handler ID convention: `db-${template.id}`
+
+#### Component Updates
+
+- [ ] **Update `src/components/BasicPromptWrapper.tsx`**
+  - [ ] Import new types and utility function
+  - [ ] Convert mock PromptTemplate data to PromptHandler array
+  - [ ] Pass handlers array to BasicPrompt instead of templates
+  - [ ] Maintain existing data fetching logic
+
+- [ ] **Update `src/components/BasicPrompt.tsx`**
+  - [ ] Update props interface: `promptHandlers: PromptHandler[]` instead of `promptTemplates`
+  - [ ] Change state: `selectedHandlerId: string` instead of `selectedPromptId: number`
+  - [ ] Update Select component to use `handler.id` and `handler.name`
+  - [ ] Update form submission to call `selectedHandler.execute({ input, runCount })`
+  - [ ] Ensure error handling works with new handler pattern
+
+- [ ] **Test Phase 1 Implementation**
+  - [ ] Verify existing mock data still works
+  - [ ] Test prompt selection and execution
+  - [ ] Verify multiple runs still work correctly
+  - [ ] Check error states display properly
+
+### Phase 2: Advanced Handler Examples
+
+#### JSON Response Handler
+- [ ] **Create `src/server/handlers/jsonResponseHandler.ts`**
+  - [ ] Import `basicPromptJson` server action
+  - [ ] Implement handler following the plan specification
+  - [ ] Test error handling and multiple runs
+  - [ ] Format response with Answer/Reasoning sections
+
+- [ ] **Add handler to BasicPromptWrapper**
+  - [ ] Import jsonResponseHandler
+  - [ ] Add to handlers array alongside database handlers
+  - [ ] Test dropdown shows both basic and advanced prompts
+
+#### UI Enhancements
+- [ ] **Add handler descriptions/tooltips**
+  - [ ] Update Select component to show handler descriptions
+  - [ ] Consider adding category badges (basic/advanced)
+  - [ ] Improve visual distinction between handler types
+
+- [ ] **Additional Advanced Handlers (Optional)**
+  - [ ] Create placeholder handlers for future development
+  - [ ] Add handler for chained prompts example
+  - [ ] Add handler for API integration example
+
+#### Testing and Polish
+- [ ] **Comprehensive Testing**
+  - [ ] Test all handler types work correctly
+  - [ ] Verify error messages are consistent
+  - [ ] Test multiple runs for both basic and advanced handlers
+  - [ ] Check loading states work properly
+
+- [ ] **Code Quality**
+  - [ ] Run linting: `pnpm lint`
+  - [ ] Ensure TypeScript compilation passes
+  - [ ] Add JSDoc comments to new functions
+  - [ ] Follow object parameter patterns from cursor rules
+
+#### Phase 3: Database Migration (Excluded - For Later)
+- ⏸️ **Database Schema** (Skip for now)
+- ⏸️ **Real Database Integration** (Skip for now)  
+- ⏸️ **CRUD Operations** (Skip for now)
+- ⏸️ **User Authentication Integration** (Skip for now)
+
+## Implementation Notes
+
+### Breaking Changes Tracking
+- [ ] **Component Interface Changes**
+  - BasicPrompt props change from `promptTemplates` to `promptHandlers`
+  - State management changes from numeric IDs to string IDs
+  - All existing functionality should work the same from user perspective
+
+### Files to Create
+- `src/types/promptHandler.ts`
+- `src/utils/createDbPromptHandler.ts` 
+- `src/server/handlers/jsonResponseHandler.ts`
+
+### Files to Modify
+- `src/components/BasicPromptWrapper.tsx`
+- `src/components/BasicPrompt.tsx`
+
+### Testing Strategy
+After each phase, test that:
+1. Dropdown populates correctly
+2. Basic prompts execute as before
+3. Advanced prompts return structured results
+4. Error handling works consistently
+5. Multiple runs work for all handler types
 
 ## Benefits
 
@@ -190,6 +269,36 @@ const createDbPromptHandler = (template: PromptTemplate): PromptHandler => ({
     runCount
   })
 });
+```
+
+### JSON Response Handler (First Advanced Example)
+```typescript
+const jsonResponseHandler: PromptHandler = {
+  id: 'json-response', // Hard-coded descriptive ID
+  name: 'Structured JSON Response',
+  category: 'advanced',
+  description: 'Returns structured answer with reasoning using JSON schema',
+  execute: async ({ input, runCount }) => {
+    const results = [];
+    for (let i = 0; i < runCount; i++) {
+      try {
+        const jsonResponse = await basicPromptJson(input);
+        results.push({
+          success: true,
+          content: `**Answer:** ${jsonResponse.answer}\n\n**Reasoning:** ${jsonResponse.reasoning}`,
+          error: null,
+        });
+      } catch (error) {
+        results.push({
+          success: false,
+          content: null,
+          error: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+      }
+    }
+    return { results };
+  }
+};
 ```
 
 ### Complex Chain Handler
