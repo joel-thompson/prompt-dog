@@ -115,85 +115,99 @@ interface BasicPromptProps {
 
 ## Implementation Checklist
 
-### Phase 1: Handler Pattern Foundation
+### Phase 1: Handler Pattern Foundation ✅ COMPLETED
 
 #### Core Types and Utilities
-- [ ] **Create `src/types/promptHandler.ts`**
-  - [ ] Consolidate existing duplicate types:
-    - `PromptResult` (currently in both `basicPrompt.ts` and `MultiplePromptResponse.tsx`)
-      - Note: `basicPrompt.ts` uses `response: string`, `MultiplePromptResponse.tsx` uses `response: string | object`
-      - Use the more flexible `string | object` version to support future JSON responses
-    - `MultiplePromptResults` (currently in both `basicPrompt.ts` and `MultiplePromptResponse.tsx`)
-    - `PromptTemplate` (currently in `promptTemplates.ts`)
-  - [ ] Define new `PromptHandler` type with execute function signature
-  - [ ] Export all types for use across components
-  - [ ] Update imports in existing files to use consolidated types
+- [x] **Create `src/types/promptHandler.ts`** ✅
+  - [x] Consolidate existing duplicate types:
+    - `PromptResult` (consolidated from `basicPrompt.ts` and `MultiplePromptResponse.tsx`)
+      - ✅ Used the more flexible `string | object` version to support JSON responses
+      - **ENHANCEMENT**: Made `prompt` optional for advanced handlers that may not have meaningful prompts
+    - `MultiplePromptResults` (consolidated from both files)
+    - `PromptTemplate` (moved from `promptTemplates.ts`)
+  - [x] Define new `PromptHandler` type with execute function signature
+  - [x] **ADDITION**: Added `AdvancedResponse` type for advanced handler return format
+  - [x] Export all types for use across components
+  - [x] Update imports in existing files to use consolidated types
 
-- [ ] **Create `src/utils/createDbPromptHandler.ts`**
-  - [ ] Import `PromptTemplate` type from consolidated types file
-  - [ ] Import `multipleBasicPrompts` server action
-  - [ ] Create utility function that converts PromptTemplate to PromptHandler
-  - [ ] Follow handler ID convention: `db-${template.id}`
+- [x] **Create `src/utils/createDbPromptHandler.ts`** ✅
+  - [x] Import `PromptTemplate` type from consolidated types file
+  - [x] Import `multipleBasicPrompts` server action
+  - [x] Create utility function that converts PromptTemplate to PromptHandler
+  - [x] Follow handler ID convention: `db-${template.id}`
 
 #### Component Updates
 
-- [ ] **Update `src/components/BasicPromptWrapper.tsx`**
-  - [ ] Import new types and utility function
-  - [ ] Convert mock PromptTemplate data to PromptHandler array
-  - [ ] Pass handlers array to BasicPrompt instead of templates
-  - [ ] Maintain existing data fetching logic
+- [x] **Update `src/components/BasicPromptWrapper.tsx`** ✅
+  - [x] Import new types and utility function
+  - [x] **ARCHITECTURE CHANGE**: Reverted to pass `promptTemplates` to avoid server/client serialization issues
+  - [x] Handler creation moved to client side in BasicPrompt component
+  - [x] Maintain existing data fetching logic
 
-- [ ] **Update `src/components/BasicPrompt.tsx`**
-  - [ ] Update props interface: `promptHandlers: PromptHandler[]` instead of `promptTemplates`
-  - [ ] Change state: `selectedHandlerId: string` instead of `selectedPromptId: number`
-  - [ ] Update Select component to use `handler.id` and `handler.name`
-  - [ ] Update form submission to call `selectedHandler.execute({ input, runCount })`
-  - [ ] Ensure error handling works with new handler pattern
+- [x] **Update `src/components/BasicPrompt.tsx`** ✅
+  - [x] Update props interface: `promptTemplates: PromptTemplate[]` (changed from original plan due to serialization)
+  - [x] Create handlers on client side using `useMemo` to avoid serialization issues
+  - [x] Change state: `selectedHandlerId: string` instead of `selectedPromptId: number`
+  - [x] Update Select component to use `handler.id` and `handler.name`
+  - [x] Update form submission to call `selectedHandler.execute({ input, runCount })`
+  - [x] Ensure error handling works with new handler pattern
 
-- [ ] **Test Phase 1 Implementation**
-  - [ ] Verify existing mock data still works
-  - [ ] Test prompt selection and execution
-  - [ ] Verify multiple runs still work correctly
-  - [ ] Check error states display properly
-  - [ ] Verify type consolidation doesn't break existing functionality
+- [x] **Test Phase 1 Implementation** ✅
+  - [x] Verify existing mock data still works
+  - [x] Test prompt selection and execution
+  - [x] Verify multiple runs still work correctly
+  - [x] Check error states display properly
+  - [x] Verify type consolidation doesn't break existing functionality
+  - [x] **RESOLVED**: Fixed server/client component serialization error
 
-### Phase 2: Advanced Handler Examples
+### Phase 2: Advanced Handler Examples ✅ COMPLETED
 
 #### JSON Response Handler
-- [ ] **Create `src/server/handlers/jsonResponseHandler.ts`**
-  - [ ] Import `basicPromptJson` server action
-  - [ ] Implement handler following the plan specification
-  - [ ] Test error handling and multiple runs
-  - [ ] Format response with Answer/Reasoning sections
+- [x] **~~Create `src/server/handlers/jsonResponseHandler.ts`~~** ✅ (REFACTORED)
+  - [x] **ARCHITECTURAL IMPROVEMENT**: Created generic `src/utils/createAdvancedHandler.ts` instead
+  - [x] Generic utility that can wrap ANY async function into a PromptHandler
+  - [x] Much more flexible and reusable than specific handlers
+  - [x] Supports optional prompt return from advanced functions
 
-- [ ] **Add handler to BasicPromptWrapper**
-  - [ ] Import jsonResponseHandler
-  - [ ] Add to handlers array alongside database handlers
-  - [ ] Test dropdown shows both basic and advanced prompts
+- [x] **Add advanced handler to BasicPrompt** ✅
+  - [x] Use `createAdvancedHandler` with `basicPromptJson` function
+  - [x] Added to handlers array alongside database handlers
+  - [x] Test dropdown shows both basic and advanced prompts
+
+- [x] **Modified `basicPromptJson` to return enhanced format** ✅
+  - [x] Now returns `{ response: object, prompt: string }` instead of just object
+  - [x] Shows actual prompt sent to AI model in UI
+  - [x] Proper JSON display in response component
 
 #### UI Enhancements
-- [ ] **Add handler descriptions/tooltips**
-  - [ ] Update Select component to show handler descriptions
-  - [ ] Consider adding category badges (basic/advanced)
-  - [ ] Improve visual distinction between handler types
+- [x] **Add handler descriptions/tooltips** ✅
+  - [x] **UI CHANGE**: Show descriptions below dropdown instead of inline for cleaner design
+  - [x] Category badges implemented (BASIC=blue, ADVANCED=purple)
+  - [x] Visual distinction between handler types achieved
+
+- [x] **Enhanced Prompt Display** ✅
+  - [x] **MAJOR IMPROVEMENT**: Made prompts optional in `PromptResult` interface
+  - [x] Conditional display - only show "Prompt Sent" section when prompt exists
+  - [x] Advanced handlers can choose whether to expose internal prompts
+  - [x] Removed misleading `promptLabel` parameter for cleaner API
 
 - [ ] **Additional Advanced Handlers (Optional)**
-  - [ ] Create placeholder handlers for future development
-  - [ ] Add handler for chained prompts example
-  - [ ] Add handler for API integration example
+  - [ ] Create placeholder handlers for future development *(deferred)*
+  - [ ] Add handler for chained prompts example *(deferred)*
+  - [ ] Add handler for API integration example *(deferred)*
 
 #### Testing and Polish
-- [ ] **Comprehensive Testing**
-  - [ ] Test all handler types work correctly
-  - [ ] Verify error messages are consistent
-  - [ ] Test multiple runs for both basic and advanced handlers
-  - [ ] Check loading states work properly
+- [x] **Comprehensive Testing** ✅
+  - [x] Test all handler types work correctly
+  - [x] Verify error messages are consistent
+  - [x] Test multiple runs for both basic and advanced handlers
+  - [x] Check loading states work properly
 
-- [ ] **Code Quality**
-  - [ ] Run linting: `pnpm lint`
-  - [ ] Ensure TypeScript compilation passes
-  - [ ] Add JSDoc comments to new functions
-  - [ ] Follow object parameter patterns from cursor rules
+- [x] **Code Quality** ✅
+  - [x] Run linting: `pnpm lint` (passes)
+  - [x] Ensure TypeScript compilation passes
+  - [x] Added JSDoc comments to new functions
+  - [x] Follow object parameter patterns from cursor rules
 
 #### Phase 3: Database Migration (Excluded - For Later)
 - ⏸️ **Database Schema** (Skip for now)
@@ -203,23 +217,57 @@ interface BasicPromptProps {
 
 ## Implementation Notes
 
-### Breaking Changes Tracking
-- [ ] **Component Interface Changes**
-  - BasicPrompt props change from `promptTemplates` to `promptHandlers`
+### Major Architectural Improvements Made ✅
+
+#### 1. **Generic Advanced Handler Pattern** (Major Enhancement)
+- **Original Plan**: Create specific handlers for each advanced function
+- **Implemented**: Created `createAdvancedHandler` utility that wraps ANY async function
+- **Benefits**: 
+  - Reusable for any advanced function
+  - Consistent error handling, timing, multiple runs
+  - Much cleaner than one-off handler files
+
+#### 2. **Optional Prompt Display** (User Experience Enhancement)
+- **Original Plan**: Always show prompts with fallback labels
+- **Implemented**: Made prompts optional in `PromptResult` interface
+- **Benefits**:
+  - Cleaner UI - only shows prompts when meaningful
+  - Advanced functions can choose whether to expose internal prompts
+  - No misleading placeholder text
+
+#### 3. **Server/Client Serialization Solution** (Technical Fix)
+- **Issue**: Cannot pass functions from server to client components
+- **Solution**: Moved handler creation to client side using `useMemo`
+- **Result**: Clean separation while maintaining performance
+
+#### 4. **Enhanced Response Format** (Better User Experience)
+- **Original Plan**: Format responses in handlers
+- **Implemented**: Advanced functions return `{ response, prompt }` format
+- **Benefits**:
+  - Shows actual prompts sent to AI models
+  - Proper JSON display in response component
+  - Functions have control over what prompts to expose
+
+### Breaking Changes Tracking ✅
+- [x] **Component Interface Changes**
+  - ~~BasicPrompt props change from `promptTemplates` to `promptHandlers`~~ (reverted due to serialization)
+  - BasicPrompt creates handlers on client side from templates
   - State management changes from numeric IDs to string IDs
-  - All existing functionality should work the same from user perspective
+  - All existing functionality works the same from user perspective
 
-### Files to Create
-- `src/types/promptHandler.ts` (consolidate existing duplicate types + new PromptHandler type)
-- `src/utils/createDbPromptHandler.ts` 
-- `src/server/handlers/jsonResponseHandler.ts`
+### Files Created ✅
+- ✅ `src/types/promptHandler.ts` (consolidated types + PromptHandler + AdvancedResponse)
+- ✅ `src/utils/createDbPromptHandler.ts` (database handler utility)
+- ✅ `src/utils/createAdvancedHandler.ts` (generic advanced handler utility - **architectural improvement**)
+- ❌ ~~`src/server/handlers/jsonResponseHandler.ts`~~ (replaced by generic utility)
 
-### Files to Modify
-- `src/components/BasicPromptWrapper.tsx`
-- `src/components/BasicPrompt.tsx`
-- `src/server/actions/basicPrompt.ts` (remove duplicate types, import from central types file)
-- `src/components/MultiplePromptResponse.tsx` (remove duplicate types, import from central types file)
-- `src/server/db/promptTemplates.ts` (remove PromptTemplate interface, import from central types file)
+### Files Modified ✅
+- ✅ `src/components/BasicPromptWrapper.tsx` (reverted to pass templates due to serialization)
+- ✅ `src/components/BasicPrompt.tsx` (handler creation on client side, enhanced UI)
+- ✅ `src/server/actions/basicPrompt.ts` (removed duplicate types, import from central)
+- ✅ `src/components/MultiplePromptResponse.tsx` (removed duplicate types, conditional prompt display)
+- ✅ `src/server/db/promptTemplates.ts` (removed PromptTemplate interface, import from central)
+- ✅ `src/server/actions/basicPromptJson.ts` (enhanced to return { response, prompt } format)
 
 ### Testing Strategy
 After each phase, test that:
@@ -334,3 +382,46 @@ const researchChainHandler: PromptHandler = {
 3. **Phase 3**: Replace mock data with database when ready
 
 This approach ensures a clear progression from mock data to flexible handlers to eventual database storage.
+
+---
+
+## ✅ IMPLEMENTATION COMPLETE - SUMMARY
+
+**Both Phase 1 and Phase 2 have been successfully completed!** The flexible prompt support system is now fully functional with several architectural improvements beyond the original plan.
+
+### What We Built
+
+1. **Unified Handler System**: Database prompts and advanced functions now work through the same dropdown interface
+2. **Generic Advanced Handler**: Any async function can be easily wrapped into a prompt handler
+3. **Smart Prompt Display**: Only shows prompts when they exist and are meaningful
+4. **Enhanced JSON Support**: Proper JSON display with actual prompts shown to users
+5. **Type-Safe Architecture**: Consolidated types with proper TypeScript enforcement
+
+### Key Benefits Achieved
+
+- **Flexibility**: Easy to add new advanced handlers without UI changes
+- **Consistency**: All handlers follow the same execution patterns appropriate to their type
+- **User Experience**: Clean UI with proper JSON display and contextual prompts
+- **Maintainability**: Generic utilities instead of one-off handler files
+- **Extensibility**: Clear path for future complex AI workflows
+
+### Current Capabilities
+
+**Users can now:**
+- Select from basic database prompts (blue BASIC badges)
+- Select from advanced structured prompts (purple ADVANCED badges)
+- See handler descriptions below the dropdown
+- View actual prompts sent to AI models (when provided)
+- Get proper JSON responses with syntax highlighting
+- Run multiple executions of any handler type
+
+### Ready for Future Extensions
+
+The architecture now supports easy addition of:
+- Research & Analysis chains
+- API integration handlers
+- Multi-step workflows
+- Tool-calling handlers
+- Any custom async function as a prompt handler
+
+**The system successfully mixes simple database prompts with complex advanced functions through a clean, unified interface!** 🎉
