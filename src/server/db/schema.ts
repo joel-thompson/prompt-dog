@@ -6,6 +6,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+
 import { env } from "@/env";
 
 // https://orm.drizzle.team/docs/goodies#multi-project-schema;

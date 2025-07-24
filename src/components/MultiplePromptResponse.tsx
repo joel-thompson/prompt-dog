@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
+
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -282,7 +283,7 @@ export default function MultiplePromptResponse({
       );
     }
 
-    if (!data || !data.results.length) {
+    if (!data?.results.length) {
       return (
         <div className="py-8 text-center">
           <p className="text-muted-foreground">No responses yet</p>

@@ -7,6 +7,7 @@ import { SignUpButton } from "@clerk/nextjs";
 import { SignInButton } from "@clerk/nextjs";
 import { SignedOut } from "@clerk/nextjs";
 import { ClerkProvider } from "@clerk/nextjs";
+
 import { Providers } from "@/providers";
 
 const geistSans = Geist({

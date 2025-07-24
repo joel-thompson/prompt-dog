@@ -1,7 +1,8 @@
 import { PromptTemplate, PromptHandler } from "@/types/promptHandler";
+import { basicPromptJson } from "@/server/actions/basicPromptJson";
+
 import { createDbPromptHandler } from "./createDbPromptHandler";
 import { createAdvancedHandler } from "./createAdvancedHandler";
-import { basicPromptJson } from "@/server/actions/basicPromptJson";
 
 const ADVANCED_HANDLERS = [
   {

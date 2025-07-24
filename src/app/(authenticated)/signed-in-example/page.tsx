@@ -1,5 +1,6 @@
-import { getUserId } from "@/server/server-only/getUserId";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+
+import { getUserId } from "@/server/server-only/getUserId";
 
 export default function Page() {
   return (

@@ -1,5 +1,7 @@
 import { Suspense } from "react";
+
 import getPromptTemplates from "@/server/db/promptTemplates";
+
 import BasicPrompt, { BasicPromptLoading } from "./BasicPrompt";
 
 async function BasicPromptContent() {

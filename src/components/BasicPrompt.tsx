@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import PromptInput from "./PromptInput";
-import MultiplePromptResponse from "./MultiplePromptResponse";
+
 import {
   Select,
   SelectContent,
@@ -14,6 +13,9 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PromptTemplate, MultiplePromptResults } from "@/types/promptHandler";
 import { createPromptHandlers } from "@/utils/createPromptHandlers";
+
+import MultiplePromptResponse from "./MultiplePromptResponse";
+import PromptInput from "./PromptInput";
 
 interface BasicPromptProps {
   promptTemplates: PromptTemplate[];

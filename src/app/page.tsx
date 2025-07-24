@@ -1,4 +1,5 @@
 import React from "react";
+
 import BasicPromptWrapper from "@/components/BasicPromptWrapper";
 
 export default async function Home() {
