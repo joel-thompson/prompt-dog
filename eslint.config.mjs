@@ -31,6 +31,12 @@ const eslintConfig = [
       "react-you-might-not-need-an-effect/you-might-not-need-an-effect": "warn",
     },
   },
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
+    },
+  },
 ];
 
 export default eslintConfig;

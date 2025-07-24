@@ -20,8 +20,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Clerk + Next.js",
-  description: "A simple Next.js app with Clerk authentication",
+  title: "Prompt Dog",
+  description: "Platform for testing and building AI prompts",
 };
 
 export default function RootLayout({
