@@ -82,6 +82,9 @@ export default function MultiplePromptResponse({
   const [copiedTextStates, setCopiedTextStates] = useState<{
     [key: string]: boolean;
   }>({});
+  const [copiedLogStates, setCopiedLogStates] = useState<{
+    [key: string]: boolean;
+  }>({});
   const [collapsedStates, setCollapsedStates] = useState<{
     [key: string]: boolean;
   }>({});
@@ -119,6 +122,24 @@ export default function MultiplePromptResponse({
     []
   );
 
+  const createHandleCopyLogs = useCallback(
+    (logs: { label: string; text: string }[], key: string) => async () => {
+      try {
+        const textToCopy = logs
+          .map((log) => `${log.label}:\n${log.text}`)
+          .join("\n\n---\n\n");
+        await navigator.clipboard.writeText(textToCopy);
+        setCopiedLogStates((prev) => ({ ...prev, [key]: true }));
+        setTimeout(() => {
+          setCopiedLogStates((prev) => ({ ...prev, [key]: false }));
+        }, 2000);
+      } catch (err) {
+        console.error("Failed to copy logs: ", err);
+      }
+    },
+    []
+  );
+
   const formatDuration = (ms: number) => {
     if (ms < 1000) return `${ms}ms`;
     return `${(ms / 1000).toFixed(2)}s`;
@@ -126,6 +147,51 @@ export default function MultiplePromptResponse({
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString();
+  };
+
+  const renderLogsContent = (
+    logs: { label: string; text: string }[],
+    logsKey: string
+  ) => {
+    if (!logs || logs.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Label className="text-sm font-medium">Processing Logs</Label>
+            <span className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-1 rounded">
+              {logs.length} {logs.length === 1 ? "entry" : "entries"}
+            </span>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={createHandleCopyLogs(logs, logsKey)}
+            className="h-6 px-2 text-xs"
+          >
+            {copiedLogStates[logsKey] ? "Copied!" : "Copy All"}
+          </Button>
+        </div>
+        <div className="space-y-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700 max-h-60 overflow-y-auto">
+          {logs.map((log, index) => (
+            <div key={index} className="space-y-1">
+              <div className="text-xs font-medium text-slate-600 dark:text-slate-400 uppercase tracking-wide">
+                {log.label}
+              </div>
+              <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed bg-white dark:bg-slate-800 rounded p-2 border border-slate-200 dark:border-slate-600">
+                {log.text}
+              </div>
+              {index < logs.length - 1 && (
+                <div className="border-b border-slate-200 dark:border-slate-600 my-2" />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   const renderResponseContent = (
@@ -298,6 +364,7 @@ export default function MultiplePromptResponse({
       const result = results[0];
       const responseKey = "single-response";
       const promptKey = "single-prompt";
+      const logsKey = "single-logs";
 
       return (
         <div className="space-y-6">
@@ -325,6 +392,9 @@ export default function MultiplePromptResponse({
 
           {/* Response */}
           {renderResponseContent(result.response, responseKey)}
+
+          {/* Logs */}
+          {result.logs && renderLogsContent(result.logs, logsKey)}
 
           {/* Prompt - only show if result has a prompt */}
           {result.prompt && (
@@ -401,6 +471,7 @@ export default function MultiplePromptResponse({
           {results.map((result, index) => {
             const responseKey = `response-${index}`;
             const promptKey = `prompt-${index}`;
+            const logsKey = `logs-${index}`;
 
             return (
               <TabsContent
@@ -426,6 +497,9 @@ export default function MultiplePromptResponse({
 
                 {/* Response */}
                 {renderResponseContent(result.response, responseKey)}
+
+                {/* Logs */}
+                {result.logs && renderLogsContent(result.logs, logsKey)}
 
                 {/* Prompt - only show if result has a prompt */}
                 {result.prompt && (

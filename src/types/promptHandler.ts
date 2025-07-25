@@ -13,6 +13,10 @@ export interface PromptTemplate {
 export interface PromptResult {
   response: string | object;
   prompt?: string; // Optional for advanced handlers that might not have a meaningful prompt
+  logs?: {
+    label: string;
+    text: string;
+  }[];
   duration: number;
   timestamp: Date;
 }
@@ -40,4 +44,8 @@ export interface PromptHandler {
 export interface AdvancedResponse {
   response: string | object;
   prompt?: string;
+  logs?: {
+    label: string;
+    text: string;
+  }[];
 }

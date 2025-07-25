@@ -38,6 +38,7 @@ export const createAdvancedHandler = ({
         results.push({
           response, // Return raw response - let MultiplePromptResponse handle JSON vs text
           prompt: usedPrompt,
+          logs: result.logs,
           duration: duration,
           timestamp: new Date(runStartTime),
         });

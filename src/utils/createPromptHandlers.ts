@@ -1,5 +1,6 @@
 import { PromptTemplate, PromptHandler } from "@/types/promptHandler";
 import { basicPromptJson } from "@/server/actions/basicPromptJson";
+import { twoStagePromptJson } from "@/server/actions/twoStagePrompt";
 
 import { createDbPromptHandler } from "./createDbPromptHandler";
 import { createAdvancedHandler } from "./createAdvancedHandler";
@@ -10,6 +11,12 @@ const ADVANCED_HANDLERS = [
     name: "Structured JSON Response",
     description: "Returns structured answer with reasoning using JSON schema",
     asyncFunction: basicPromptJson,
+  },
+  {
+    id: "two-stage-json-response",
+    name: "Two Stage JSON Response",
+    description: "Returns structured answer with reasoning using JSON schema",
+    asyncFunction: twoStagePromptJson,
   },
 ] as const;
 
