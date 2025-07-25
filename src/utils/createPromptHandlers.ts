@@ -11,12 +11,16 @@ const ADVANCED_HANDLERS = [
     name: "Structured JSON Response",
     description: "Returns structured answer with reasoning using JSON schema",
     asyncFunction: basicPromptJson,
+    // Enable parallel execution with concurrency limit
+    execution: { type: "parallel", maxConcurrency: 3 },
   },
   {
     id: "two-stage-json-response",
     name: "Two Stage JSON Response",
     description: "Returns structured answer with reasoning using JSON schema",
     asyncFunction: twoStagePromptJson,
+    // Keep serial execution (this is also the default if omitted)
+    execution: { type: "serial" },
   },
 ] as const;
 
